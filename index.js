@@ -10,19 +10,47 @@ initializeApp({
   credential: cert(credentials)
 })
 
-// Connect to Firestore DB
+// Connect us to our Firestore DB (project)
 const db = getFirestore();
 
 // Add a product to our products collection
-const candy = {
-  name: "Skittles",
+const candy2 = {
+  name: "Twix",
   unitPrice: 3.99,
-  size: "16 oz",
-  color: "green",
-  inventory: 144,
-  productNumber: 7,
+  size: "12 oz",
+  color: "gold",
+  inventory: 288,
+  productNumber: 2,
 }
 
-db.collection('products').add(candy) // reference a collection & product in firestore
-  .then(doc => console.log("added doc: ",  doc.id))
-  .catch(err => console.log(err))
+// db.collection('products').add(candy2) // While we are waiting for a promise
+//   .then((doc) => {
+//     console.log("added doc: ",  doc.id)
+//     // I can be sure inside .then that the first process was completed successfully
+//    // return db.collection('products').get() // also returns a promise
+//   })
+//   //.then()
+//   .catch(err => console.log(err))
+
+// How to read a document from firestore:
+db.collection('products').doc('RhCXJhq2fG1h9ljznl2f').get()
+//db.collection('products').doc('RhCXJhq2fG1h9ljznl2f').delete()-How to delete
+.then(doc => { // no parenthesis needed when only 1 param
+  console.log(doc.data())
+}) // you can call this whatever you want
+.catch(err => console.log(err)) //can also be written >>> .catch(console.log) 
+
+//how to update
+db.collection('products').doc('RhCXJhq2fG1h9ljznl2f').update({
+  inventory: 555,
+  customerFavorite: true,
+})
+
+
+// How to get a whole collection
+db.collection('products').get()
+.then(collection =>{
+  const productList = collection.docs.map(doc =>({...doc.data(), id: doc.id}));
+  console.table(productList);
+})
+.catch(console.log)
